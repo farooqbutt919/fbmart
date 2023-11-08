@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <style>
+    /* Basic CSS styling for the button */
+    .button-container {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh; /* 100% of the viewport height for vertical centering */
+    }
+
+    .button {
+      padding: 10px 20px;
+      background-color: #007bff;
+      color: #fff;
+      border: none;
+      cursor: pointer;
+    }
+
+    /* Hover effect */
+    .button:hover {
+      background-color: #0056b3;
+    }
+
+    /* CSS for the banner and formatted text */
+    .banner {
+      background-color: #007bff;
+      color: #fff;
+      padding: 10px;
+      text-align: center;
+      font-size: 24px;
+    }
+
+    .formatted-text {
+      text-align: center;
+      font-size: 16px;
+    }
+  </style>
+</head>
+<body>
+  <div class="banner">
+    FB-Baqala
+  </div>
+
+  <div class="formatted-text">
+    Executive service to address your cravings during office hours
+  </div>
+
+  <div class="button-container">
+    <button class="button" id="openUrlButton">Whats in the grocery</button>
+  </div>
+
+  <script>
+    // JavaScript to open the URL when the button is clicked
+    document.getElementById('openUrlButton').addEventListener('click', function() {
+      window.location.href = 'https://0g2p2tm46b.execute-api.us-east-1.amazonaws.com/myfunc';
+    });
+  </script>
+  <div class="button-container">
+    <button class="button" id="registerButton">Register</button>
+    <button class="button" id="signInButton">Sign In</button>
+  </div>
+
+  <script>
+    // JavaScript to open the URL when the button is clicked
+    document.getElementById('registerButton').addEventListener('click', function() {
+      // Add your Register button logic here
+    });
+
+    document.getElementById('signInButton').addEventListener('click', function() {
+      // Add your Sign In button logic here
+    });
+
+</body>
+</html>
