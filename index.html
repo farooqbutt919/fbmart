@@ -33,67 +33,29 @@
         margin-left: 20px;
         }
     </style>
-    <!-- Add the AWS SDK for JavaScript -->
-<script src="https://cdnjs.cloudflare.com/ajax/libs/aws-sdk/2.1147.0/aws-sdk.min.js"></script>
-
-<!-- Your existing HTML -->
-
-<script>
-  var callAPI = (username, password, firstName, lastName) => {
-    // AWS Cognito configuration
-    AWS.config.region = 'us-east-1'; // e.g., us-east-1
-
-    var authenticationData = {
-      Username: username,
-      Password: password,
-    };
-
-    var authenticationDetails = new AmazonCognitoIdentity.AuthenticationDetails(
-      authenticationData
-    );
-
-    var poolData = {
-      UserPoolId: 'yus-east-1_5OjJm8ohZ',
-      ClientId: '3lfru8jon7qus53oh99a17kinm',
-    };
-
-    var userPool = new AmazonCognitoIdentity.CognitoUserPool(poolData);
-
-    var userData = {
-      Username: username,
-      Pool: userPool,
-    };
-
-    var cognitoUser = new AmazonCognitoIdentity.CognitoUser(userData);
-
-    // Authenticate the user
-    cognitoUser.authenticateUser(authenticationDetails, {
-      onSuccess: function (session) {
-        // User authentication successful, call your API
-        var requestOptions = {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            Authorization: session.getIdToken().getJwtToken(),
-          },
-          body: JSON.stringify({
-            firstName: firstName,
-            lastName: lastName,
-          }),
-        };
-
-        fetch('https://rgzwtkh1p9.execute-api.us-east-1.amazonaws.com/dev', requestOptions)
-          .then((response) => response.text())
-          .then((result) => alert(JSON.parse(result).body))
-          .catch((error) => console.log('error', error));
-      },
-      onFailure: function (err) {
-        // Handle authentication failure
-        console.log('Authentication failed', err);
-      },
-    });
-  };
-</script>
+    <script>
+        // define the callAPI function that takes a first name and last name as parameters
+        var callAPI = (firstName,lastName)=>{
+            // instantiate a headers object
+            var myHeaders = new Headers();
+            // add content type header to object
+            myHeaders.append("Content-Type", "application/json");
+            // using built in JSON utility package turn object to string and store in a variable
+            var raw = JSON.stringify({"firstName":firstName,"lastName":lastName});
+            // create a JSON object with parameters for API call and store in a variable
+            var requestOptions = {
+                method: 'POST',
+                headers: myHeaders,
+                body: raw,
+                redirect: 'follow'
+            };
+            // make API call with parameters and use promises to get response
+            fetch("https://rgzwtkh1p9.execute-api.us-east-1.amazonaws.com/dev", requestOptions)
+            .then(response => response.text())
+            .then(result => alert(JSON.parse(result).body))
+            .catch(error => console.log('error', error));
+        }
+    </script>
 </head>
 <body>
 
