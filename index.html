@@ -50,77 +50,49 @@
             font-size: 18px;
             cursor: pointer;
             border: none;
-            margin-bottom: 15px; /* Added spacing after the button */
+            margin-bottom: 15px;
         }
 
         button:hover {
             background-color: #FF9900;
         }
     </style>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/aws-sdk/2.1051.0/aws-sdk.min.js"></script>
-    <script>
 
-        var callAPI = (firstName,lastName)=>{
-            // instantiate a headers object
-            var myHeaders = new Headers();
-            // add content type header to object
-            myHeaders.append("Content-Type", "application/json");
-            // using built in JSON utility package turn object to string and store in a variable
-            var raw = JSON.stringify({"firstName":firstName,"lastName":lastName});
-            // create a JSON object with parameters for API call and store in a variable
-            var requestOptions = {
+    <script>
+        const callAPI = (firstName, lastName) => {
+            const apiEndpoint = "https://rgzwtkh1p9.execute-api.us-east-1.amazonaws.com/dev";
+
+            fetch(apiEndpoint, {
                 method: 'POST',
-                headers: myHeaders,
-                body: raw,
-                redirect: 'follow'
-            };
-            // make API call with parameters and use promises to get response
-            fetch("https://rgzwtkh1p9.execute-api.us-east-1.amazonaws.com/dev", requestOptions)
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ "firstName": firstName, "lastName": lastName }),
+            })
             .then(response => response.text())
             .then(result => alert(JSON.parse(result).body))
             .catch(error => console.log('error', error));
         }
 
+        const subscribe = async (email) => {
+            const sesEndpoint = "https://rgzwtkh1p9.execute-api.us-east-1.amazonaws.com/dev/ses";
 
-
-        function loadScript(url, callback) {
-            var script = document.createElement("script");
-            script.type = "text/javascript";
-            script.onload = callback;
-            script.src = url;
-            document.head.appendChild(script);
-        }
-
-        loadScript("https://cdnjs.cloudflare.com/ajax/libs/aws-sdk/2.1051.0/aws-sdk.min.js", function () {
-            if (typeof AWS !== 'undefined') {
-                AWS.config.update({
-                    accessKeyId: '', // Update with your AWS access key
-                    secretAccessKey: '', // Update with your AWS secret key
-                    region: 'us-east-1', // Update with your AWS region
+            try {
+                await fetch(sesEndpoint, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ "email": email }),
                 });
-               
-                var subscribe = async (email) => {
-                    try {
-                        var ses = new AWS.SES();
-                        var params = {
-                            EmailAddress: email
-                        };
 
-                        await ses.verifyEmailAddress(params).promise();
+                alert(`Verification email sent to ${email}. Please check your inbox and click the verification link.`);
 
-                        alert(`Verification email sent to ${email}. Please check your inbox and click the verification link.`);
-
-                    } catch (error) {
-                        console.log('error', error);
-                        alert(`Failed to initiate verification for ${email}. Please try again.`);
-                    }
-                }
-
-                window.onload = () => {
-                    window.subscribe = subscribe;
-                };
+            } catch (error) {
+                console.log('error', error);
+                alert(`Failed to initiate verification for ${email}. Please try again.`);
             }
-        });
+        }
     </script>
 </head>
 
@@ -134,13 +106,10 @@
         <label for="lName">Last Name:</label>
         <input type="text" id="lName" required>
 
-        <!-- Button for API call -->
         <button type="button" onclick="callAPI(document.getElementById('fName').value, document.getElementById('lName').value)">What's In the Grocery</button>
 
-        <!-- Add space after the button -->
         <div style="margin-bottom: 15px;"></div>
 
-        <!-- Email subscription -->
         <label for="subscribeInput">Email Address:</label>
         <input type="text" id="subscribeInput" required>
         <button type="button" onclick="subscribe(document.getElementById('subscribeInput').value)">Subscribe</button>
