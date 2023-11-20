@@ -1,40 +1,65 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
+
 <head>
     <meta charset="UTF-8">
-    <title> FB Mart!</title>
-    <!-- Add some CSS to change client UI -->
+    <title>FB Mart</title>
     <style>
+        body {
+            background-color: #090e14;
+            color: #FF9900;
+            font-family: Arial, Helvetica, sans-serif;
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
 
-    #heading {
-        font-size: 36px;
-        color: #eb770b;
-        margin: 20px 0;
+        #heading {
+            font-size: 36px;
+            color: #eb770b;
+            margin: 20px 0;
         }
-      
-    #subheading {
-        font-size: 18px;
-        margin-bottom: 20px;
+
+        #subheading {
+            font-size: 18px;
+            margin-bottom: 20px;
+            color: #eb770b;
         }
-    
-    body {
-        background-color: #090e14;
+
+        form {
+            display: flex;
+            flex-direction: column;
+            max-width: 300px;
+            margin: 0 auto;
         }
-    label, button {
-        color: #FF9900;
-        font-family: Arial, Helvetica, sans-serif;
-        font-size: 20px;
-        margin-left: 40px;
+
+        label {
+            margin-bottom: 10px;
         }
-     input {
-        color: #232F3E;
-        font-family: Arial, Helvetica, sans-serif;
-        font-size: 20px;
-        margin-left: 20px;
+
+        input {
+            padding: 8px;
+            margin-bottom: 15px;
+            font-size: 16px;
+        }
+
+        button {
+            background-color: #eb770b;
+            color: #090e14;
+            padding: 10px;
+            font-size: 18px;
+            cursor: pointer;
+            border: none;
+            margin-bottom: 15px; /* Added spacing after the button */
+        }
+
+        button:hover {
+            background-color: #FF9900;
         }
     </style>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/aws-sdk/2.1051.0/aws-sdk.min.js"></script>
     <script>
-        // define the callAPI function that takes a first name and last name as parameters
+
         var callAPI = (firstName,lastName)=>{
             // instantiate a headers object
             var myHeaders = new Headers();
@@ -55,19 +80,71 @@
             .then(result => alert(JSON.parse(result).body))
             .catch(error => console.log('error', error));
         }
+
+
+
+        function loadScript(url, callback) {
+            var script = document.createElement("script");
+            script.type = "text/javascript";
+            script.onload = callback;
+            script.src = url;
+            document.head.appendChild(script);
+        }
+
+        loadScript("https://cdnjs.cloudflare.com/ajax/libs/aws-sdk/2.1051.0/aws-sdk.min.js", function () {
+            if (typeof AWS !== 'undefined') {
+                AWS.config.update({
+                    accessKeyId: '', // Update with your AWS access key
+                    secretAccessKey: '', // Update with your AWS secret key
+                    region: 'us-east-1', // Update with your AWS region
+                });
+               
+                var subscribe = async (email) => {
+                    try {
+                        var ses = new AWS.SES();
+                        var params = {
+                            EmailAddress: email
+                        };
+
+                        await ses.verifyEmailAddress(params).promise();
+
+                        alert(`Verification email sent to ${email}. Please check your inbox and click the verification link.`);
+
+                    } catch (error) {
+                        console.log('error', error);
+                        alert(`Failed to initiate verification for ${email}. Please try again.`);
+                    }
+                }
+
+                window.onload = () => {
+                    window.subscribe = subscribe;
+                };
+            }
+        });
     </script>
 </head>
-<body>
 
+<body>
     <h1 id="heading">FB-Mart</h1>
-    <p id="subheading" style="color:#eb770b;">Executive service to address your cravings during office hours</p>
+    <p id="subheading">Executive service to address your cravings during office hours</p>
     <form>
-        <label>First Name :</label>
-        <input type="text" id="fName">
-        <label>Last Name :</label>
-        <input type="text" id="lName">
-        <!-- set button onClick method to call function we defined passing input values as parameters -->
-        <button type="button" onclick="callAPI(document.getElementById('fName').value,document.getElementById('lName').value)"> Whats In the Grocery</button>
+        <label for="fName">First Name:</label>
+        <input type="text" id="fName" required>
+
+        <label for="lName">Last Name:</label>
+        <input type="text" id="lName" required>
+
+        <!-- Button for API call -->
+        <button type="button" onclick="callAPI(document.getElementById('fName').value, document.getElementById('lName').value)">What's In the Grocery</button>
+
+        <!-- Add space after the button -->
+        <div style="margin-bottom: 15px;"></div>
+
+        <!-- Email subscription -->
+        <label for="subscribeInput">Email Address:</label>
+        <input type="text" id="subscribeInput" required>
+        <button type="button" onclick="subscribe(document.getElementById('subscribeInput').value)">Subscribe</button>
     </form>
 </body>
+
 </html>
